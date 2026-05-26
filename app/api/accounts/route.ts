@@ -7,13 +7,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServiceClient, isSupabaseConfigured } from "@/lib/supabase";
+import { listAccounts } from "@/lib/accounts";
 
 export async function GET() {
+  // 未設定時はダミーへフォールバック（プロトタイプ運用で画面を止めない）
   if (!isSupabaseConfigured) {
-    return NextResponse.json(
-      { error: "Supabase 未設定。環境変数を確認してください。" },
-      { status: 503 }
-    );
+    const accounts = await listAccounts();
+    return NextResponse.json({ accounts });
   }
   const db = getServiceClient();
   const { data, error } = await db

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { agents, orchestrator, Agent, AgentStatus } from "@/data/agents";
 import { TopBar } from "./TopBar";
 import { KpiStrip } from "./KpiStrip";
@@ -10,6 +11,7 @@ import { AgentModal } from "./AgentModal";
 import { ActivityFeed } from "./ActivityFeed";
 
 export function Dashboard() {
+  const router = useRouter();
   const [allOn, setAllOn] = useState(true);
   const [selected, setSelected] = useState<Agent | null>(null);
 
@@ -48,7 +50,9 @@ export function Dashboard() {
               key={a.id}
               agent={{ ...a, status: effectiveStatus(a.status) }}
               index={i}
-              onClick={() => setSelected(a)}
+              onClick={() =>
+                a.id === "sales" ? router.push("/accounts") : setSelected(a)
+              }
             />
           ))}
         </div>

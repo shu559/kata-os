@@ -8,18 +8,18 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServiceClient, isSupabaseConfigured } from "@/lib/supabase";
+import { listPlans } from "@/lib/accounts";
 
 // GET /api/plans?account_id=xxx
 export async function GET(req: NextRequest) {
-  if (!isSupabaseConfigured) {
-    return NextResponse.json(
-      { error: "Supabase 未設定。環境変数を確認してください。" },
-      { status: 503 }
-    );
-  }
   const accountId = req.nextUrl.searchParams.get("account_id");
   if (!accountId) {
     return NextResponse.json({ error: "account_id は必須です。" }, { status: 400 });
+  }
+  // 未設定時はダミーへフォールバック
+  if (!isSupabaseConfigured) {
+    const plans = await listPlans(accountId);
+    return NextResponse.json({ plans });
   }
 
   const db = getServiceClient();
